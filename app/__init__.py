@@ -17,7 +17,6 @@ def create_app():
 
     with app.app_context():
         from . import models, routes, admin
-        db.create_all()
         admin.init_admin(app)
 
     app.register_blueprint(routes.bp, url_prefix="/")
