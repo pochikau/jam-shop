@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 RUN chmod +x entrypoint.sh
 
-ENV FLASK_APP=app.app
+ENV FLASK_APP=app:app
 EXPOSE 5000
 
 ENTRYPOINT ["./entrypoint.sh"]

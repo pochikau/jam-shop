@@ -8,4 +8,4 @@ app = create_app()
 with app.app_context():
     db.create_all()
 "
-exec gunicorn --bind 0.0.0.0:5000 --workers 2 app.app:app
+exec gunicorn --bind 0.0.0.0:5000 --workers 2 app:app
