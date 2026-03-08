@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Корзина — Варенье на любой вкус{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Корзина</h1>
+  {% if items %}
+  <table class="cart-table">
+    <thead>
+      <tr>
+        <th>Товар</th>
+        <th>Цена</th>
+        <th>Кол-во</th>
+        <th>Сумма</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product, qty, subtotal in items %}
+      <tr>
+        <td>{{ product.name }}</td>
+        <td>{{ "%.0f"|format(product.price) }} ₽</td>
+        <td>{{ qty }}</td>
+        <td>{{ "%.0f"|format(subtotal) }} ₽</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="cart-total">Итого: <strong>{{ "%.0f"|format(total) }} ₽</strong></p>
+
+  <form action="{{ url_for('main.order') }}" method="post" class="order-form">
+    <input type="hidden" name="cart" value="{{ cart }}">
+    <label>Имя * <input type="text" name="name" required></label>
+    <label>Email * <input type="email" name="email" required></label>
+    <label>Телефон <input type="text" name="phone"></label>
+    <label>Адрес доставки * <textarea name="address" required></textarea></label>
+    <button type="submit" class="btn">Оформить заказ</button>
+  </form>
+  {% else %}
+  <p>Корзина пуста. <a href="{{ url_for('main.index') }}">В каталог</a></p>
+  {% endif %}
+</div>
+{% endblock %}

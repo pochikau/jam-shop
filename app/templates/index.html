@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Каталог — Варенье на любой вкус{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Наше варенье</h1>
+  <p class="lead">Домашнее варенье из ягод и фруктов. Выберите баночку и оформите заказ.</p>
+
+  <div class="product-grid">
+    {% for p in products %}
+    <article class="product-card">
+      <div class="product-image">
+        {% if p.image_url %}
+        <img src="{{ p.image_url }}" alt="{{ p.name }}">
+        {% else %}
+        <span class="no-image">🍓</span>
+        {% endif %}
+      </div>
+      <h2>{{ p.name }}</h2>
+      <p class="product-desc">{{ p.description or '' }}</p>
+      <p class="product-price">{{ "%.0f"|format(p.price) }} ₽</p>
+      <a href="{{ url_for('main.product', id=p.id, cart=cart) }}" class="btn">Подробнее</a>
+    </article>
+    {% else %}
+    <p>Пока нет товаров. Добавьте их в <a href="/admin">админке</a>.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

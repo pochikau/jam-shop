@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Варенье на любой вкус{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="{{ url_for('main.index') }}" class="logo">🍓 Варенье на любой вкус</a>
+      <nav>
+        <a href="{{ url_for('main.index') }}">Каталог</a>
+        <a href="{{ url_for('main.cart_page') }}">Корзина</a>
+        <a href="/admin">Админка</a>
+      </nav>
+    </div>
+  </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container flashes">
+        {% for category, msg in messages %}
+          <div class="flash flash-{{ category }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <main class="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© Варенье на любой вкус. Заказы: order@jam.example</p>
+    </div>
+  </footer>
+</body>
+</html>
