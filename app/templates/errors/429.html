@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Слишком много запросов{% endblock %}
+{% block content %}
+<div class="container error-page">
+  <h1>429</h1>
+  <p class="lead">Слишком много запросов с вашего IP. Подождите минуту и попробуйте снова.</p>
+  <a href="{{ url_for('main.index') }}" class="btn">На главную</a>
+</div>
+{% endblock %}

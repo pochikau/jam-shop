@@ -6,6 +6,7 @@
   <p class="lead">Введите креды оператора, чтобы перейти в панель управления вареньем.</p>
 
   <form method="post" class="order-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <label>Логин
       <input type="text" name="username" autofocus required>
     </label>

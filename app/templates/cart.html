@@ -26,7 +26,11 @@
   </table>
   <p class="cart-total">Итого: <strong>{{ "%.0f"|format(total) }} ₽</strong></p>
 
+  <div class="cart-actions">
+    <a href="{{ url_for('main.index', cart=cart) }}" class="btn btn-secondary">← Продолжить покупки</a>
+  </div>
   <form action="{{ url_for('main.order') }}" method="post" class="order-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" name="cart" value="{{ cart }}">
     <label>Имя * <input type="text" name="name" required></label>
     <label>Email * <input type="email" name="email" required></label>

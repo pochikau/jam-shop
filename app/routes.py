@@ -1,16 +1,40 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from app import db
+from app import db, limiter
 from app.models import Product, Order, OrderItem
 from decimal import Decimal
 
 bp = Blueprint("main", __name__)
+PER_PAGE = 12
 
 
 @bp.route("/")
 def index():
-    products = Product.query.filter_by(in_stock=True).all()
     cart = request.args.get("cart", "")
-    return render_template("index.html", products=products, cart=cart)
+    q = request.args.get("q", "").strip()
+    sort = request.args.get("sort", "name")
+    page = request.args.get("page", 1, type=int)
+    if page < 1:
+        page = 1
+
+    query = Product.query.filter_by(in_stock=True)
+    if q:
+        query = query.filter(Product.name.ilike(f"%{q}%"))
+    if sort == "price_asc":
+        query = query.order_by(Product.price.asc())
+    elif sort == "price_desc":
+        query = query.order_by(Product.price.desc())
+    else:
+        query = query.order_by(Product.name.asc())
+
+    pagination = query.paginate(page=page, per_page=PER_PAGE)
+    return render_template(
+        "index.html",
+        products=pagination.items,
+        pagination=pagination,
+        cart=cart,
+        search_q=q,
+        sort=sort,
+    )
 
 
 @bp.route("/product/<int:id>")
@@ -21,6 +45,7 @@ def product(id):
 
 
 @bp.route("/order", methods=["GET", "POST"])
+@limiter.limit("5 per minute")
 def order():
     if request.method == "GET":
         return redirect(url_for("main.index"))
