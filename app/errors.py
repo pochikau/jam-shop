@@ -1,5 +1,5 @@
 from flask import render_template
-from flask_limiter.exceptions import RateLimitExceeded
+from flask_limiter.errors import RateLimitExceeded
 
 
 def register_handlers(app):
