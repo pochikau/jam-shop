@@ -1,8 +1,26 @@
 import os
-from flask import Flask
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_limiter import Limiter
 
 db = SQLAlchemy()
+
+
+def _get_remote_addr():
+    if request.headers.get("X-Forwarded-For"):
+        return request.headers.get("X-Forwarded-For").split(",")[0].strip()
+    return request.remote_addr or "127.0.0.1"
+
+
+def _admin_exempt():
+    return not request.path.startswith("/admin")
+
+
+limiter = Limiter(
+    key_func=_get_remote_addr,
+    application_limits=["10 per minute"],
+    application_limits_exempt_when=_admin_exempt,
+)
 
 
 def create_app():
@@ -14,6 +32,7 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     db.init_app(app)
+    limiter.init_app(app)
 
     with app.app_context():
         from . import models, routes, admin
