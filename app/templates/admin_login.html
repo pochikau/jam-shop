@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Вход в админку{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 420px;">
+  <h1>Admin / Access</h1>
+  <p class="lead">Введите креды оператора, чтобы перейти в панель управления вареньем.</p>
+
+  <form method="post" class="order-form">
+    <label>Логин
+      <input type="text" name="username" autofocus required>
+    </label>
+    <label>Пароль
+      <input type="password" name="password" required>
+    </label>
+    <button type="submit" class="btn">Войти</button>
+  </form>
+</div>
+{% endblock %}
+

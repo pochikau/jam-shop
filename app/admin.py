@@ -1,7 +1,7 @@
 import os
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from flask import redirect, url_for, request
+from flask import redirect, url_for, request, session, render_template, flash
 from functools import wraps
 from app import db
 from app.models import Product, Order, OrderItem
@@ -17,33 +17,12 @@ class AdminAuth:
         return username == cls.USERNAME and password == cls.PASSWORD
 
 
-def admin_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        auth = request.authorization
-        if not auth or not AdminAuth.check(auth.username, auth.password):
-            from flask import Response
-            return Response(
-                "Требуется авторизация",
-                401,
-                {"WWW-Authenticate": 'Basic realm="Admin"'},
-            )
-        return f(*args, **kwargs)
-    return decorated
-
-
 class SecureModelView(ModelView):
     def is_accessible(self):
-        auth = request.authorization
-        return auth and AdminAuth.check(auth.username, auth.password)
+        return session.get("is_admin") is True
 
     def inaccessible_callback(self, name, **kwargs):
-        from flask import Response
-        return Response(
-            "Требуется авторизация",
-            401,
-            {"WWW-Authenticate": 'Basic realm="Admin"'},
-        )
+        return redirect(url_for("admin_login"))
 
 
 class ProductView(SecureModelView):
@@ -69,3 +48,21 @@ def init_admin(app):
     admin.add_view(ProductView(Product, db.session, name="Товары"))
     admin.add_view(OrderView(Order, db.session, name="Заказы"))
     admin.add_view(OrderItemView(OrderItem, db.session, name="Позиции заказов"))
+
+    @app.route("/admin/login", methods=["GET", "POST"])
+    def admin_login():
+        if request.method == "POST":
+            username = request.form.get("username", "")
+            password = request.form.get("password", "")
+            if AdminAuth.check(username, password):
+                session["is_admin"] = True
+                flash("Добро пожаловать в админку.", "success")
+                return redirect(url_for("admin.index"))
+            flash("Неверный логин или пароль.", "danger")
+        return render_template("admin_login.html")
+
+    @app.route("/admin/logout")
+    def admin_logout():
+        session.pop("is_admin", None)
+        flash("Вы вышли из админки.", "success")
+        return redirect(url_for("main.index"))
